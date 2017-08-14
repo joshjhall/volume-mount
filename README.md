@@ -17,9 +17,6 @@ This is a simple docker container to mount a CIFS share and expose it to other d
 
 `PASSWORD` = Password for the SMB server
 
-# Port
-Uses the default sidekiq monitor port `9292` internally
-
 
 # How to use
 The resulting mount will be exposed as a volume in `/mount/<MOUNT>/`.  This allows multiple containers to manage several connections to the same server for different directories.  All of these can then be used by another container.
