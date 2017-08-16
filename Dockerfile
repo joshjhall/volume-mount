@@ -1,24 +1,23 @@
-FROM ubuntu:16.04
+# Use phusion/baseimage as base image. To make your builds reproducible, make
+# sure you lock down to a specific version, not to `latest`!
+# See https://github.com/phusion/baseimage-docker/releases for
+# a list of version numbers.
+FROM phusion/baseimage
+MAINTAINER Josh Hall, joshjhall
 
-RUN apt-get update && apt-get -y install -qq autofs cifs-utils && \
-	apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+# Use baseimage-docker's init system.
+CMD ["/sbin/my_init"]
+
+# Install needed packages
+RUN apt-get update && apt-get -y install -qq cifs-utils
+
+# Clean up apt
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy the init file
+RUN mkdir -p /etc/my_init.d
+COPY init.sh /etc/my_init.d/init.sh
+RUN chmod +x /etc/my_init.d/init.sh
 
 # Make volumes available
 VOLUME ["/mount"]
-
-# Add autofs files
-COPY auto.server /etc/
-COPY auto.server.auth /etc/
-COPY auto.master /etc/
-
-# Set permissions
-RUN chmod 0400 /etc/auto.server
-RUN chmod 0400 /etc/auto.server.auth
-RUN chmod 0400 /etc/auto.master
-
-# Copy the init file
-COPY init.sh /
-RUN chmod 0755 /init.sh
-
-# Initialize the container
-CMD ["/init.sh"]
